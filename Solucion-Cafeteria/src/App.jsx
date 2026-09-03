@@ -3,7 +3,6 @@ import { storage } from './utils/storage';
 import Sidebar from './Components/Sidebar';
 import AnimatedBackground from './Components/AnimatedBackground';
 import Setup from './Pages/Setup';
-import Login from './Pages/Login';
 import Dashboard from './Pages/Dashboard';
 import Menu from './Pages/Menu';
 import Sales from './Pages/Sales';
@@ -14,7 +13,6 @@ import './App.css';
 
 function App() {
   const business = storage.getBusiness();
-  const loggedIn = storage.isLoggedIn();
 
   if (!business) {
     return (
@@ -22,16 +20,6 @@ function App() {
         <AnimatedBackground />
         <Routes>
           <Route path="*" element={<Setup />} />
-        </Routes>
-      </HashRouter>
-    );
-  }
-
-  if (!loggedIn) {
-    return (
-      <HashRouter>
-        <Routes>
-          <Route path="*" element={<Login />} />
         </Routes>
       </HashRouter>
     );
