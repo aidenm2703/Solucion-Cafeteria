@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { storage } from '../utils/storage';
 import { BUSINESS_TYPES, SUGGESTED_PRODUCTS } from '../data/businessData';
+import logoGaia from '../Img/logoGaia.jpeg';
 
 export default function Setup() {
   const navigate = useNavigate();
@@ -64,8 +65,8 @@ export default function Setup() {
       <div className={`setup-card ${isAnimating ? 'fade-out' : 'fade-in'}`}>
         {step === 0 && (
           <div className="setup-step">
-            <div className="setup-icon-large">🚀</div>
-            <h1 className="setup-title">BusinessOS</h1>
+            <img src={logoGaia} alt="Gaia Dynamics" className="setup-logo" />
+            <h1 className="setup-title">Gaia Dynamics</h1>
             <p className="setup-subtitle">
               Tu sistema inteligente de gestión de negocios
             </p>
@@ -152,7 +153,7 @@ export default function Setup() {
               )}
             </div>
             <button className="setup-btn primary large" onClick={handleConfirm}>
-              ⚡ ¡Empezar a Usar BusinessOS!
+              ⚡ ¡Empezar a Usar Gaia Dynamics!
             </button>
           </div>
         )}

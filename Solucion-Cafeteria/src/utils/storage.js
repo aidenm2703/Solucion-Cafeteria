@@ -1,10 +1,26 @@
-const PREFIX = 'businessOS_';
+const PREFIX = 'gaiaDynamics_';
+const LEGACY_PREFIX = 'businessOS_';
+
+export const DEFAULT_EXCHANGE_RATE = 36.5;
+
+function isValidRate(rate) {
+  return typeof rate === 'number' && Number.isFinite(rate) && rate > 0;
+}
 
 export const storage = {
   get(key, defaultValue = null) {
     try {
-      const value = localStorage.getItem(PREFIX + key);
-      return value ? JSON.parse(value) : defaultValue;
+      let value = localStorage.getItem(PREFIX + key);
+      // Migración automática de datos guardados con el prefijo legacy (BusinessOS)
+      if (value === null) {
+        const legacy = localStorage.getItem(LEGACY_PREFIX + key);
+        if (legacy !== null) {
+          localStorage.setItem(PREFIX + key, legacy);
+          localStorage.removeItem(LEGACY_PREFIX + key);
+          value = legacy;
+        }
+      }
+      return value != null ? JSON.parse(value) : defaultValue;
     } catch {
       return defaultValue;
     }
@@ -112,5 +128,17 @@ export const storage = {
 
   cancelReservation(id) {
     return this.updateReservation(id, { status: 'cancelada' });
+  },
+
+  /** Tipo de cambio configurable: 1 USD → Bs */
+  getExchangeRate() {
+    const rate = this.get('exchangeRate', DEFAULT_EXCHANGE_RATE);
+    return isValidRate(rate) ? rate : DEFAULT_EXCHANGE_RATE;
+  },
+
+  setExchangeRate(rate) {
+    const parsed = typeof rate === 'string' ? parseFloat(rate) : rate;
+    if (!isValidRate(parsed)) return false;
+    return this.set('exchangeRate', parsed);
   },
 };

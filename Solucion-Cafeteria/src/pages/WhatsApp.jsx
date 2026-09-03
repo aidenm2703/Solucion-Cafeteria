@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { storage } from '../utils/storage';
+import { formatDual } from '../utils/currency';
 
 const BOT_RESPONSES = {
   greeting: [
@@ -54,7 +55,7 @@ function processMessage(input, businessName) {
     const topItems = menu.slice(0, 5);
     let msg = BOT_RESPONSES.menu[0] + '\n\n';
     topItems.forEach((item, i) => {
-      msg += `${i + 1}. ${item.name} - $${item.price.toFixed(2)}\n   ${item.description}\n\n`;
+      msg += `${i + 1}. ${item.name} - ${formatDual(item.price)}\n   ${item.description}\n\n`;
     });
     msg += '💡 ¿Te gustaría ver el menú completo o hacer un pedido?';
     return msg;

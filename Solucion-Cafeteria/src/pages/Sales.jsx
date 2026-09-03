@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { storage } from '../utils/storage';
 import Modal from '../components/Modal';
+import {
+  DEFAULT_EXCHANGE_RATE,
+  formatBs,
+  formatDual,
+  isValidRate,
+  usdToBs,
+} from '../utils/currency';
 
 export default function Sales() {
   const [menu] = useState(storage.getMenu());
@@ -11,6 +18,9 @@ export default function Sales() {
   const [paymentMethod, setPaymentMethod] = useState('efectivo');
   const [showSuccess, setShowSuccess] = useState(false);
   const [lastOrder, setLastOrder] = useState(null);
+  const [exchangeRate, setExchangeRate] = useState(() =>
+    storage.getExchangeRate().toString()
+  );
 
   const categories = [...new Set(menu.map((i) => i.category))];
 
@@ -50,6 +60,18 @@ export default function Sales() {
   const tip = Math.round(subtotal * 0.1 * 100) / 100;
   const total = subtotal + tip;
 
+  // Tipo de cambio vigente para la conversión USD → Bs
+  const rate = isValidRate(Number(exchangeRate))
+    ? Number(exchangeRate)
+    : DEFAULT_EXCHANGE_RATE;
+
+  const handleRateChange = (e) => {
+    const raw = e.target.value;
+    setExchangeRate(raw);
+    const parsed = parseFloat(raw);
+    if (parsed > 0) storage.setExchangeRate(parsed);
+  };
+
   const getCartQuantity = (id) => {
     const item = cart.find((c) => c.id === id);
     return item ? item.quantity : 0;
@@ -68,6 +90,7 @@ export default function Sales() {
       tip,
       total,
       paymentMethod,
+      exchangeRate: rate,
       status: 'completada',
     };
     const saved = storage.addOrder(order);
@@ -84,6 +107,19 @@ export default function Sales() {
         <div>
           <h1>Punto de Venta</h1>
           <p className="page-subtitle">Selecciona productos para crear una orden</p>
+        </div>
+        <div className="page-actions">
+          <label className="rate-field">
+            <span className="rate-field-label">💱 Tipo de cambio (1 USD → Bs)</span>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              className="form-input rate-input"
+              value={exchangeRate}
+              onChange={handleRateChange}
+            />
+          </label>
         </div>
       </div>
 
@@ -189,15 +225,26 @@ export default function Sales() {
               <div className="pos-cart-summary">
                 <div className="pos-cart-row">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <div className="pos-cart-amounts">
+                    <span>${subtotal.toFixed(2)}</span>
+                    <span className="amount-bs">{formatBs(usdToBs(subtotal, rate))}</span>
+                  </div>
                 </div>
                 <div className="pos-cart-row tip">
                   <span>Propina (10%)</span>
-                  <span>${tip.toFixed(2)}</span>
+                  <div className="pos-cart-amounts">
+                    <span>${tip.toFixed(2)}</span>
+                    <span className="amount-bs">{formatBs(usdToBs(tip, rate))}</span>
+                  </div>
                 </div>
                 <div className="pos-cart-row total">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <div className="pos-cart-amounts">
+                    <span>${total.toFixed(2)}</span>
+                    <span className="amount-bs amount-bs-total">
+                      {formatBs(usdToBs(total, rate))}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -234,10 +281,27 @@ export default function Sales() {
             </button>
           ))}
         </div>
+        <div className="modal-rate-row">
+          <label className="rate-field-label">💱 Tipo de cambio (1 USD → Bs)</label>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            className="form-input"
+            value={exchangeRate}
+            onChange={handleRateChange}
+          />
+          <p className="rate-hint">Ajusta el cambio del día antes de cobrar.</p>
+        </div>
         <div className="pos-cart-summary" style={{ marginTop: 16 }}>
           <div className="pos-cart-row total">
             <span>Total a pagar</span>
-            <span>${total.toFixed(2)}</span>
+            <div className="pos-cart-amounts">
+              <span>${total.toFixed(2)}</span>
+              <span className="amount-bs amount-bs-total">
+                {formatBs(usdToBs(total, rate))}
+              </span>
+            </div>
           </div>
         </div>
         <div className="modal-form-actions" style={{ marginTop: 16 }}>
@@ -255,7 +319,10 @@ export default function Sales() {
 
       {showSuccess && (
         <div className="toast success">
-          <span>✅</span> Venta registrada exitosamente — ${lastOrder?.total?.toFixed(2)}
+          <span>✅</span> Venta registrada exitosamente —{' '}
+          {lastOrder
+            ? formatDual(lastOrder.total, lastOrder.exchangeRate)
+            : ''}
         </div>
       )}
     </div>

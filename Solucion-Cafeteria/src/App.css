@@ -7,36 +7,36 @@
 }
 
 :root {
-  --primary: #6C63FF;
-  --primary-light: #8B83FF;
-  --primary-dark: #5A52E0;
-  --primary-bg: rgba(108, 99, 255, 0.08);
-  --secondary: #FF6584;
-  --success: #00C9A7;
-  --success-bg: rgba(0, 201, 167, 0.1);
-  --warning: #FFB800;
-  --warning-bg: rgba(255, 184, 0, 0.1);
-  --danger: #FF4757;
-  --danger-bg: rgba(255, 71, 87, 0.08);
-  --info: #3B82F6;
-  --dark: #1E1E2E;
-  --sidebar-bg: #1E1E2E;
-  --sidebar-hover: #2D2B55;
-  --sidebar-active: #6C63FF;
-  --card: #FFFFFF;
-  --bg: #F4F5FA;
-  --text: #1A1A2E;
-  --text-secondary: #6B7280;
-  --text-muted: #9CA3AF;
-  --border: #E5E7EB;
-  --border-light: #F3F4F6;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --radius: 10px;
-  --radius-lg: 16px;
-  --transition: 0.2s ease;
+  /* ✅ Identidad Gaia Dynamics (src/Styles/Variables.css) */
+  --primary: var(--color-primary);
+  --primary-light: var(--color-primary-light);
+  --primary-dark: var(--color-primary-dark);
+  --primary-bg: rgba(var(--color-primary-rgb), 0.08);
+  --secondary: var(--color-accent);
+  --success: var(--color-success);
+  --success-bg: rgba(var(--color-primary-rgb), 0.1);
+  --warning: var(--color-warning);
+  --warning-bg: rgba(233, 196, 106, 0.12);
+  --danger: var(--color-danger);
+  --danger-bg: rgba(230, 57, 70, 0.08);
+  --info: var(--color-secondary);
+  --dark: var(--color-primary-dark);
+  --sidebar-bg: var(--color-primary-dark);
+  --sidebar-hover: rgba(var(--color-primary-rgb), 0.55);
+  --sidebar-active: var(--color-primary-light);
+  --card: var(--color-bg-alt);
+  --bg: var(--color-bg);
+  --text: var(--color-text);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+  --border: var(--color-bg-muted);
+  --border-light: var(--color-bg-muted);
+  --shadow-sm: 0 1px 3px rgba(var(--color-text-rgb), 0.08);
+  --shadow: 0 1px 3px rgba(var(--color-text-rgb), 0.1), 0 1px 2px rgba(var(--color-text-rgb), 0.06);
+  --shadow-md: 0 4px 12px rgba(var(--color-text-rgb), 0.12);
+  --shadow-lg: 0 8px 24px rgba(var(--color-text-rgb), 0.16);
+  --radius: var(--radius-md);
+  --transition: var(--transition-base);
 }
 
 body {
@@ -97,10 +97,22 @@ body {
   border-radius: 10px;
 }
 
+/* Logotipo oficial de Gaia Dynamics (circular) */
+.logo-img {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--color-bg-alt);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
 .logo-text {
   font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.5px;
+  font-family: 'Harlow Solid Italic', 'Harlow Solid', cursive;
 }
 
 .sidebar-business {
@@ -152,7 +164,7 @@ body {
 .sidebar-link.active {
   background: var(--primary);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(108, 99, 255, 0.4);
+  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.4);
 }
 
 .sidebar-link-icon {
@@ -238,6 +250,12 @@ body {
   border-radius: 20px;
   font-size: 13px;
   font-weight: 500;
+}
+
+.badge-secondary {
+  background: rgba(var(--color-secondary-rgb), 0.12);
+  color: var(--color-secondary-dark);
+  border: 1px solid rgba(var(--color-secondary-rgb), 0.25);
 }
 
 /* ============ BUTTONS ============ */
@@ -500,7 +518,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1E1E2E 0%, #2D2B55 100%);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
   position: relative;
   overflow: hidden;
 }
@@ -556,11 +574,22 @@ body {
   margin-bottom: 16px;
 }
 
+.setup-logo {
+  width: 112px;
+  height: 112px;
+  object-fit: cover;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  background: var(--color-bg-alt);
+}
+
 .setup-title {
   font-size: 42px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  background: linear-gradient(135deg, #fff 0%, #c4b5fd 100%);
+  font-weight: 400;
+  letter-spacing: 0px;
+  font-family: 'Harlow Solid Italic', 'Harlow Solid', cursive;
+  background: linear-gradient(135deg, #fff 0%, var(--color-secondary-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -601,7 +630,7 @@ body {
   outline: none;
   border-color: var(--primary);
   background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+  box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.25);
 }
 
 .setup-input::placeholder {
@@ -625,7 +654,7 @@ body {
   color: #fff;
   width: 100%;
 }
-.setup-btn.primary:hover { background: var(--primary-dark); box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4); }
+.setup-btn.primary:hover { background: var(--primary-dark); box-shadow: 0 4px 15px rgba(var(--color-primary-rgb), 0.4); }
 .setup-btn.primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .setup-btn.large {
@@ -663,14 +692,14 @@ body {
 
 .business-type-card:hover {
   border-color: var(--primary);
-  background: rgba(108, 99, 255, 0.15);
+  background: rgba(var(--color-primary-rgb), 0.15);
   transform: translateY(-3px);
 }
 
 .business-type-card.selected {
   border-color: var(--primary);
   background: var(--primary);
-  box-shadow: 0 4px 20px rgba(108, 99, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(var(--color-primary-rgb), 0.4);
 }
 
 .business-type-icon {
@@ -793,9 +822,19 @@ body {
 }
 
 .menu-card-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.3;
   font-size: 18px;
   font-weight: 700;
   color: var(--success);
+}
+
+.menu-price-bs {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 .menu-card-name {
@@ -1014,6 +1053,65 @@ body {
   margin-top: 4px;
 }
 
+/* Montos en doble moneda (USD + Bs) */
+.pos-cart-amounts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.35;
+  gap: 2px;
+}
+
+.amount-bs {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.amount-bs-total {
+  font-size: 14px;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+/* Selector de tipo de cambio */
+.rate-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+}
+
+.rate-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.rate-input {
+  width: 100%;
+}
+
+.modal-rate-row {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: var(--color-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+}
+
+.modal-rate-row .rate-field-label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.rate-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
 /* ============ MODAL ============ */
 .modal-overlay {
   position: fixed;
@@ -1227,6 +1325,12 @@ body {
 .order-totals strong {
   font-size: 16px;
   color: var(--text);
+}
+
+.order-total-bs {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
 }
 
 /* ============ EMPTY STATE ============ */

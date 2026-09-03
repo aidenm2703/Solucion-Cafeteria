@@ -1,13 +1,13 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { storage } from './utils/storage';
-import Sidebar from './components/Sidebar';
-import Setup from './pages/Setup';
+import Sidebar from './Components/Sidebar';
+import Setup from './Pages/Setup';
 import Dashboard from './pages/Dashboard';
-import Menu from './pages/Menu';
-import Sales from './pages/Sales';
-import Orders from './pages/Orders';
-import Reservations from './pages/Reservations';
-import WhatsApp from './pages/WhatsApp';
+import Menu from './Pages/Menu';
+import Sales from './Pages/Sales';
+import Orders from './Pages/Orders';
+import Reservations from './Pages/Reservations';
+import WhatsApp from './Pages/WhatsApp';
 import './App.css';
 
 function App() {

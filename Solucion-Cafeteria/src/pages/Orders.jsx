@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { storage } from '../utils/storage';
+import { formatBs, formatDual, formatRateText, formatUsd, usdToBs } from '../utils/currency';
 
 function getTodayString() {
   return new Date().toISOString().split('T')[0];
@@ -26,6 +27,14 @@ export default function Orders() {
 
   const dayTotal = filteredOrders.reduce((sum, o) => sum + (o.total || 0), 0);
   const dayTips = filteredOrders.reduce((sum, o) => sum + (o.tip || 0), 0);
+  const dayTotalBs = filteredOrders.reduce(
+    (sum, o) => sum + usdToBs(o.total || 0, o.exchangeRate),
+    0
+  );
+  const dayTipsBs = filteredOrders.reduce(
+    (sum, o) => sum + usdToBs(o.tip || 0, o.exchangeRate),
+    0
+  );
 
   return (
     <div className="page">
@@ -45,26 +54,35 @@ export default function Orders() {
       </div>
 
       <div className="stats-grid" style={{ marginBottom: 24 }}>
-        <div className="stat-card" style={{ borderLeftColor: '#6C63FF' }}>
+        <div className="stat-card" style={{ borderLeftColor: '#1B4332' }}>
           <div className="stat-card-icon">🧾</div>
           <div className="stat-card-info">
             <span className="stat-card-value">{filteredOrders.length}</span>
             <span className="stat-card-label">Órdenes Totales</span>
           </div>
         </div>
-        <div className="stat-card" style={{ borderLeftColor: '#00C9A7' }}>
+        <div className="stat-card" style={{ borderLeftColor: '#2D6A4F' }}>
           <div className="stat-card-icon">💵</div>
           <div className="stat-card-info">
-            <span className="stat-card-value">${dayTotal.toFixed(2)}</span>
+            <span className="stat-card-value">{formatUsd(dayTotal)}</span>
             <span className="stat-card-label">Total del Día</span>
+            <span className="stat-card-sub">{formatBs(dayTotalBs)}</span>
           </div>
         </div>
-        <div className="stat-card" style={{ borderLeftColor: '#FFB800' }}>
+        <div className="stat-card" style={{ borderLeftColor: '#E9C46A' }}>
           <div className="stat-card-icon">💰</div>
           <div className="stat-card-info">
-            <span className="stat-card-value">${dayTips.toFixed(2)}</span>
+            <span className="stat-card-value">{formatUsd(dayTips)}</span>
             <span className="stat-card-label">Propinas (10%)</span>
-            <span className="stat-card-sub">Para el personal</span>
+            <span className="stat-card-sub">Para el personal · {formatBs(dayTipsBs)}</span>
+          </div>
+        </div>
+        <div className="stat-card" style={{ borderLeftColor: '#00B4D8' }}>
+          <div className="stat-card-icon">💱</div>
+          <div className="stat-card-info">
+            <span className="stat-card-value">{formatRateText()}</span>
+            <span className="stat-card-label">Tipo de Cambio</span>
+            <span className="stat-card-sub">USD → Bs</span>
           </div>
         </div>
       </div>
@@ -109,10 +127,13 @@ export default function Orders() {
                 </span>
                 <div className="order-totals">
                   <span>
-                    Sub: ${order.subtotal?.toFixed(2)} · Propina: $
-                    {order.tip?.toFixed(2)}
+                    Sub: {formatUsd(order.subtotal)} · Propina:{' '}
+                    {formatUsd(order.tip)}
                   </span>
-                  <strong>Total: ${order.total?.toFixed(2)}</strong>
+                  <span className="order-total-bs">
+                    {formatDual(order.total, order.exchangeRate)}
+                  </span>
+                  <strong>Total: {formatUsd(order.total)}</strong>
                 </div>
               </div>
             </div>

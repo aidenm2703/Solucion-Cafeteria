@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { storage } from '../utils/storage';
 import { SUGGESTED_PRODUCTS } from '../data/businessData';
 import Modal from '../components/Modal';
+import { formatBs, formatUsd, usdToBs } from '../utils/currency';
 
 const EMPTY_ITEM = {
   name: '',
@@ -132,7 +133,10 @@ export default function Menu() {
           <div key={item.id} className="menu-card">
             <div className="menu-card-header">
               <span className="menu-card-category">{item.category}</span>
-              <span className="menu-card-price">${item.price.toFixed(2)}</span>
+              <div className="menu-card-price">
+                {formatUsd(item.price)}
+                <span className="menu-price-bs">{formatBs(usdToBs(item.price))}</span>
+              </div>
             </div>
             <h3 className="menu-card-name">{item.name}</h3>
             <p className="menu-card-desc">{item.description}</p>
@@ -196,7 +200,7 @@ export default function Menu() {
             </datalist>
           </div>
           <div className="form-group">
-            <label>Precio ($) *</label>
+            <label>Precio (USD $) *</label>
             <input
               type="number"
               step="0.01"

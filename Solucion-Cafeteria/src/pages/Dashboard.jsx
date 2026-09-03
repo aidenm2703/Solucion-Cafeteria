@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { storage } from '../utils/storage';
+import { formatBs, formatRateText, formatUsd, usdToBs } from '../utils/currency';
 import {
   BarChart,
   Bar,
@@ -15,7 +16,16 @@ import {
   Line,
 } from 'recharts';
 
-const PIE_COLORS = ['#6C63FF', '#FF6584', '#00C9A7', '#FFB800', '#3B82F6', '#FF4757', '#A855F7', '#14B8A6'];
+const PIE_COLORS = [
+  '#1B4332',
+  '#2D6A4F',
+  '#00B4D8',
+  '#48CAE4',
+  '#E07A5F',
+  '#F4A261',
+  '#E9C46A',
+  '#0077B6',
+];
 
 const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
@@ -157,44 +167,47 @@ export default function Dashboard() {
             <strong>{business?.name || 'tu negocio'}</strong>
           </p>
         </div>
-        <span className="badge">
-          {new Date().toLocaleDateString('es-ES', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </span>
+        <div className="page-actions">
+          <span className="badge badge-secondary">💱 {formatRateText()}</span>
+          <span className="badge">
+            {new Date().toLocaleDateString('es-ES', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </span>
+        </div>
       </div>
 
       <div className="stats-grid">
         <StatCard
           icon="💵"
           label="Ventas Hoy"
-          value={`$${stats.todayRevenue.toFixed(2)}`}
-          sub={`${stats.todayCount} órdenes`}
-          color="#6C63FF"
+          value={formatUsd(stats.todayRevenue)}
+          sub={`${stats.todayCount} órdenes · ${formatBs(usdToBs(stats.todayRevenue))}`}
+          color="#1B4332"
         />
         <StatCard
           icon="💰"
           label="Propinas Hoy"
-          value={`$${stats.todayTips.toFixed(2)}`}
-          sub="10% del total"
-          color="#00C9A7"
+          value={formatUsd(stats.todayTips)}
+          sub={`10% del total · ${formatBs(usdToBs(stats.todayTips))}`}
+          color="#2D6A4F"
         />
         <StatCard
           icon="📈"
           label="Ventas Semana"
-          value={`$${stats.weekRevenue.toFixed(2)}`}
-          sub={`${stats.weekCount} órdenes`}
-          color="#FF6584"
+          value={formatUsd(stats.weekRevenue)}
+          sub={`${stats.weekCount} órdenes · ${formatBs(usdToBs(stats.weekRevenue))}`}
+          color="#00B4D8"
         />
         <StatCard
           icon="👥"
           label="Clientes Hoy"
           value={stats.todayCount}
           sub={`${stats.weekCount} en la semana`}
-          color="#FFB800"
+          color="#E07A5F"
         />
       </div>
 
@@ -210,7 +223,7 @@ export default function Dashboard() {
                 formatter={(value) => [`$${value.toFixed(2)}`, 'Ventas']}
                 contentStyle={{ borderRadius: 8 }}
               />
-              <Bar dataKey="ventas" fill="#6C63FF" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="ventas" fill="#1B4332" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -229,9 +242,9 @@ export default function Dashboard() {
               <Line
                 type="monotone"
                 dataKey="ventas"
-                stroke="#FF6584"
+                stroke="#00B4D8"
                 strokeWidth={2}
-                dot={{ fill: '#FF6584' }}
+                dot={{ fill: '#00B4D8' }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -245,7 +258,7 @@ export default function Dashboard() {
               <XAxis dataKey="name" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
               <Tooltip contentStyle={{ borderRadius: 8 }} />
-              <Bar dataKey="clientes" fill="#00C9A7" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="clientes" fill="#2D6A4F" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
