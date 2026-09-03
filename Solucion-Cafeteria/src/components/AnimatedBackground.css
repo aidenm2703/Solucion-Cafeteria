@@ -1,0 +1,45 @@
+.animated-background {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #f8f9fa;
+}
+
+.animated-background::after {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(33, 37, 41, 0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(33, 37, 41, 0.025) 1px, transparent 1px);
+  background-size: 42px 42px;
+  content: '';
+  mask-image: linear-gradient(to bottom, black, transparent 72%);
+}
+
+.animated-background-orb {
+  position: absolute;
+  width: 44vw;
+  height: 44vw;
+  max-width: 620px;
+  max-height: 620px;
+  border-radius: 50%;
+  filter: blur(70px);
+}
+
+.animated-background-orb-primary {
+  top: -18%;
+  left: 18%;
+  background: #48cae4;
+}
+
+.animated-background-orb-secondary {
+  right: -14%;
+  bottom: -24%;
+  background: #e07a5f;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-background-orb {
+    filter: blur(45px);
+  }
+}

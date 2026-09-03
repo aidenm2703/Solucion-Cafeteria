@@ -432,6 +432,107 @@ body {
   margin-top: 2px;
 }
 
+/* ============ EXCHANGE COMPARATOR ============ */
+.exchange-comparator {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(300px, 1.25fr) minmax(260px, 1fr);
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 28px;
+  padding: 24px 28px;
+  border: 1px solid rgba(27, 67, 50, 0.12);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(12px);
+}
+
+.exchange-comparator-kicker {
+  color: var(--color-secondary-dark);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.exchange-comparator h2 {
+  margin: 6px 0 5px;
+  color: var(--color-primary-dark);
+  font-size: 20px;
+}
+
+.exchange-comparator p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.exchange-comparator-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.exchange-control {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.exchange-control input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--color-text);
+  font: inherit;
+  outline: none;
+}
+
+.exchange-control input:focus {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.14);
+}
+
+.exchange-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.08), rgba(var(--color-secondary-rgb), 0.1));
+}
+
+.exchange-result div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.exchange-result span {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.exchange-result strong {
+  color: var(--color-primary-dark);
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.exchange-result-arrow {
+  color: var(--color-accent-dark) !important;
+  font-size: 20px !important;
+}
+
 /* ============ CHARTS ============ */
 .charts-grid {
   display: grid;
@@ -1932,6 +2033,12 @@ body {
 @media (max-width: 640px) {
   .page-header {
     flex-direction: column;
+  }
+
+  .exchange-comparator {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 20px;
   }
 
   .stats-grid {

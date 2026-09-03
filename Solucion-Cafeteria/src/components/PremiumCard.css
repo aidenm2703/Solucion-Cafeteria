@@ -1,0 +1,53 @@
+.premium-card {
+  display: flex;
+  min-height: 176px;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid rgba(27, 67, 50, 0.08);
+  cursor: pointer;
+  outline: none;
+  transform-origin: center;
+}
+
+.premium-card:focus-visible {
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.28);
+}
+
+.premium-card-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.premium-card-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 12px;
+  font-size: 21px;
+}
+
+.premium-card-arrow {
+  display: inline-flex;
+  color: var(--color-text-muted);
+}
+
+.premium-card-label,
+.premium-card-sub {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.premium-card-label {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.premium-card-value {
+  color: var(--color-primary-dark);
+  font-size: 1.7rem;
+  line-height: 1.1;
+}

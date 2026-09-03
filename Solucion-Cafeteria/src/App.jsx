@@ -1,8 +1,9 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { storage } from './utils/storage';
 import Sidebar from './Components/Sidebar';
+import AnimatedBackground from './Components/AnimatedBackground';
 import Setup from './Pages/Setup';
-import Dashboard from './pages/Dashboard';
+import Dashboard from './Pages/Dashboard';
 import Menu from './Pages/Menu';
 import Sales from './Pages/Sales';
 import Orders from './Pages/Orders';
@@ -16,6 +17,7 @@ function App() {
   if (!business) {
     return (
       <HashRouter>
+        <AnimatedBackground />
         <Routes>
           <Route path="*" element={<Setup />} />
         </Routes>
@@ -25,6 +27,7 @@ function App() {
 
   return (
     <HashRouter>
+      <AnimatedBackground />
       <div className="app-layout">
         <Sidebar />
         <main className="main-content">

@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { storage } from '../utils/storage';
-import { formatBs, formatRateText, formatUsd, usdToBs } from '../utils/currency';
+import { formatBs, formatRateText, formatUsd, isValidRate, usdToBs } from '../utils/currency';
+import PremiumCard from '../Components/PremiumCard';
 import {
   BarChart,
   Bar,
@@ -57,6 +58,44 @@ function StatCard({ icon, label, value, sub, color }) {
         {sub && <span className="stat-card-sub">{sub}</span>}
       </div>
     </div>
+  );
+}
+
+function ExchangeComparator() {
+  const [rate, setRate] = useState(storage.getExchangeRate().toString());
+  const [amount, setAmount] = useState('100');
+  const numericRate = isValidRate(Number(rate)) ? Number(rate) : 0;
+  const numericAmount = Number(amount) || 0;
+
+  const handleRateChange = (event) => {
+    const nextRate = event.target.value;
+    setRate(nextRate);
+    if (isValidRate(Number(nextRate))) storage.setExchangeRate(Number(nextRate));
+  };
+
+  return (
+    <section className="exchange-comparator" aria-labelledby="exchange-title">
+      <div className="exchange-comparator-heading">
+        <span className="exchange-comparator-kicker">Herramienta financiera</span>
+        <h2 id="exchange-title">Compara tu dinero en tiempo real</h2>
+        <p>Actualiza la tasa y visualiza ambas monedas al instante.</p>
+      </div>
+      <div className="exchange-comparator-controls">
+        <label className="exchange-control">
+          <span>Monto en USD</span>
+          <input type="number" min="0" step="0.01" value={amount} onChange={(event) => setAmount(event.target.value)} />
+        </label>
+        <label className="exchange-control">
+          <span>1 USD equivale a Bs</span>
+          <input type="number" min="0.01" step="0.01" value={rate} onChange={handleRateChange} />
+        </label>
+      </div>
+      <div className="exchange-result" aria-live="polite">
+        <div><span>USD</span><strong>{formatUsd(numericAmount)}</strong></div>
+        <span className="exchange-result-arrow">⇄</span>
+        <div><span>Bolívares</span><strong>{formatBs(usdToBs(numericAmount, numericRate))}</strong></div>
+      </div>
+    </section>
   );
 }
 
@@ -210,6 +249,26 @@ export default function Dashboard() {
           color="#E07A5F"
         />
       </div>
+
+      <div className="stats-grid" style={{ marginBottom: 24 }}>
+        <PremiumCard
+          icon="☕"
+          label="Rendimiento semanal"
+          value={formatUsd(stats.weekRevenue)}
+          sub={`${stats.weekCount} órdenes procesadas`}
+          accent="#1B4332"
+        />
+        <PremiumCard
+          icon="⚡"
+          label="Acceso rápido"
+          value="Nueva orden"
+          sub="Registra una venta en segundos"
+          href="/orders"
+          accent="#00B4D8"
+        />
+      </div>
+
+      <ExchangeComparator />
 
       <div className="charts-grid">
         <div className="chart-card large">
