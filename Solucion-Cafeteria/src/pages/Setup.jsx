@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { storage } from '../utils/storage';
 import { BUSINESS_TYPES, SUGGESTED_PRODUCTS } from '../data/businessData';
 import logoGaia from '../Img/logoGaia.jpeg';
+import BusinessIcon from '../Components/BusinessIcon';
 
 export default function Setup() {
   const navigate = useNavigate();
@@ -110,7 +111,9 @@ export default function Setup() {
                   }`}
                   onClick={() => handleTypeSelect(type)}
                 >
-                  <span className="business-type-icon">{type.icon}</span>
+                  <span className="business-type-icon">
+                    <BusinessIcon type={type.icon} />
+                  </span>
                   <span className="business-type-label">{type.label}</span>
                 </button>
               ))}
@@ -121,7 +124,9 @@ export default function Setup() {
         {step === 2 && selectedType && (
           <div className="setup-step">
             <div className="setup-confirm-header">
-              <span className="setup-confirm-icon">{selectedType.icon}</span>
+              <span className="setup-confirm-icon">
+                <BusinessIcon type={selectedType.icon} />
+              </span>
               <h1>¡Genial! Configuración de {selectedType.label}</h1>
               <p className="setup-subtitle">
                 Se han sugerido{' '}

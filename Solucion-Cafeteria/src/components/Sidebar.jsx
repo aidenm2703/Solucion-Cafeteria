@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { storage } from '../utils/storage';
 import logoGaia from '../Img/logoGaia.jpeg';
+import BusinessIcon from './BusinessIcon';
 
 const NAV_ITEMS = [
   { to: '/', icon: '🏠', label: 'Inicio' },
@@ -33,7 +34,9 @@ export default function Sidebar() {
         </div>
         {business && (
           <div className="sidebar-business">
-            <span className="business-icon">{business.icon}</span>
+            <span className="business-icon">
+              <BusinessIcon type={business.type || business.icon} />
+            </span>
             <span className="business-name">{business.name}</span>
           </div>
         )}

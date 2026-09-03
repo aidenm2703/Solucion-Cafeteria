@@ -1,9 +1,9 @@
 export const BUSINESS_TYPES = [
-  { id: 'cafeteria', label: 'Cafetería', icon: '☕' },
-  { id: 'barberia', label: 'Barbería', icon: '✂️' },
-  { id: 'comida-rapida', label: 'Restaurante de Comida Rápida', icon: '🍔' },
-  { id: 'bar', label: 'Bar', icon: '🍸' },
-  { id: 'otro', label: 'Otro', icon: '🏪' },
+  { id: 'cafeteria', label: 'Cafetería', icon: 'cafeteria' },
+  { id: 'barberia', label: 'Barbería', icon: 'barberia' },
+  { id: 'comida-rapida', label: 'Restaurante de Comida Rápida', icon: 'comida-rapida' },
+  { id: 'bar', label: 'Bar', icon: 'bar' },
+  { id: 'otro', label: 'Otro', icon: 'otro' },
 ];
 
 export const SUGGESTED_PRODUCTS = {
