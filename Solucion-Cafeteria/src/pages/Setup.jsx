@@ -7,6 +7,10 @@ export default function Setup() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [authError, setAuthError] = useState('');
   const [selectedType, setSelectedType] = useState(null);
   const [greeting, setGreeting] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
@@ -23,11 +27,33 @@ export default function Setup() {
     }
   };
 
+  const handleAuthSubmit = (e) => {
+    e.preventDefault();
+    setAuthError('');
+    if (!username.trim() || !password) {
+      setAuthError('Completa todos los campos.');
+      return;
+    }
+    if (password.length < 4) {
+      setAuthError('La contraseña debe tener al menos 4 caracteres.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setAuthError('Las contraseñas no coinciden.');
+      return;
+    }
+    setIsAnimating(true);
+    setTimeout(() => {
+      setStep(2);
+      setIsAnimating(false);
+    }, 300);
+  };
+
   const handleTypeSelect = (type) => {
     setSelectedType(type);
     setIsAnimating(true);
     setTimeout(() => {
-      setStep(2);
+      setStep(3);
       setIsAnimating(false);
     }, 300);
   };
@@ -41,6 +67,12 @@ export default function Setup() {
       createdAt: new Date().toISOString(),
     };
     storage.setBusiness(business);
+    storage.setAuth({
+      username: username.trim(),
+      password,
+      createdAt: new Date().toISOString(),
+    });
+    storage.setLoggedIn(true);
 
     const suggestedProducts = SUGGESTED_PRODUCTS[selectedType.id] || [];
     const menuWithIds = suggestedProducts.map((p, i) => ({
@@ -97,6 +129,56 @@ export default function Setup() {
             <div className="setup-greeting">
               <h1>{greeting}</h1>
               <p className="setup-subtitle">
+                Crea un usuario y contraseña para proteger tu sistema
+              </p>
+            </div>
+            <form onSubmit={handleAuthSubmit} className="setup-form">
+              <label className="setup-label">👤 Usuario</label>
+              <input
+                type="text"
+                className="setup-input"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Ej: admin"
+                autoFocus
+              />
+              <label className="setup-label" style={{ marginTop: 14 }}>
+                🔒 Contraseña
+              </label>
+              <input
+                type="password"
+                className="setup-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Mínimo 4 caracteres"
+              />
+              <label className="setup-label" style={{ marginTop: 14 }}>
+                🔑 Repetir contraseña
+              </label>
+              <input
+                type="password"
+                className="setup-input"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Repite la contraseña"
+              />
+              {authError && <div className="setup-error">{authError}</div>}
+              <button
+                type="submit"
+                className="setup-btn primary"
+                disabled={!username.trim() || !password || !confirmPassword}
+              >
+                Continuar →
+              </button>
+            </form>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="setup-step">
+            <div className="setup-greeting">
+              <h1>{greeting}</h1>
+              <p className="setup-subtitle">
                 Ahora dinos, ¿qué tipo de negocio tienes?
               </p>
             </div>
@@ -117,7 +199,7 @@ export default function Setup() {
           </div>
         )}
 
-        {step === 2 && selectedType && (
+        {step === 3 && selectedType && (
           <div className="setup-step">
             <div className="setup-confirm-header">
               <span className="setup-confirm-icon">{selectedType.icon}</span>
@@ -159,7 +241,7 @@ export default function Setup() {
       </div>
 
       <div className="setup-steps-indicator">
-        {[0, 1, 2].map((s) => (
+        {[0, 1, 2, 3].map((s) => (
           <div
             key={s}
             className={`step-dot ${step >= s ? 'active' : ''}`}

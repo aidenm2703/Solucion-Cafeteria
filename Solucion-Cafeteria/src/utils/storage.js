@@ -113,4 +113,53 @@ export const storage = {
   cancelReservation(id) {
     return this.updateReservation(id, { status: 'cancelada' });
   },
+
+  getAuth() {
+    return this.get('auth', null);
+  },
+
+  setAuth(auth) {
+    return this.set('auth', auth);
+  },
+
+  setLoggedIn(loggedIn) {
+    return this.set('loggedIn', loggedIn);
+  },
+
+  isLoggedIn() {
+    return this.get('loggedIn', false);
+  },
+
+  getTurn() {
+    return this.get('turn', null);
+  },
+
+  setTurn(turn) {
+    return this.set('turn', turn);
+  },
+
+  openTurn() {
+    const turn = {
+      id: Date.now().toString(),
+      openedAt: new Date().toISOString(),
+    };
+    this.setTurn(turn);
+    return turn;
+  },
+
+  closeTurn() {
+    const turn = this.getTurn();
+    if (!turn) return null;
+    const closed = { ...turn, closedAt: new Date().toISOString() };
+    this.setTurn(closed);
+    const history = this.get('turnHistory', []);
+    history.push(closed);
+    this.set('turnHistory', history);
+    this.setTurn(null);
+    return closed;
+  },
+
+  getTurnHistory() {
+    return this.get('turnHistory', []);
+  },
 };

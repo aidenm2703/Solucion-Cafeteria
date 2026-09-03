@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import { storage } from './utils/storage';
 import Sidebar from './components/Sidebar';
 import Setup from './pages/Setup';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Menu from './pages/Menu';
 import Sales from './pages/Sales';
@@ -12,12 +13,23 @@ import './App.css';
 
 function App() {
   const business = storage.getBusiness();
+  const loggedIn = storage.isLoggedIn();
 
   if (!business) {
     return (
       <HashRouter>
         <Routes>
           <Route path="*" element={<Setup />} />
+        </Routes>
+      </HashRouter>
+    );
+  }
+
+  if (!loggedIn) {
+    return (
+      <HashRouter>
+        <Routes>
+          <Route path="*" element={<Login />} />
         </Routes>
       </HashRouter>
     );
