@@ -14,13 +14,25 @@ import {
   LineChart,
   Line,
 } from 'recharts';
+import { formatMoney } from '../utils/currency';
 
 const PIE_COLORS = ['#6C63FF', '#FF6584', '#00C9A7', '#FFB800', '#3B82F6', '#FF4757', '#A855F7', '#14B8A6'];
 
 const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 function getTodayString() {
-  return new Date().toISOString().split('T')[0];
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function dateStr(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 function getWeekDates() {
@@ -32,7 +44,7 @@ function getWeekDates() {
   for (let i = 0; i < 7; i++) {
     const d = new Date(monday);
     d.setDate(monday.getDate() + i);
-    dates.push(d.toISOString().split('T')[0]);
+    dates.push(dateStr(d));
   }
   return dates;
 }
@@ -171,21 +183,21 @@ export default function Dashboard() {
         <StatCard
           icon="💵"
           label="Ventas Hoy"
-          value={`$${stats.todayRevenue.toFixed(2)}`}
+          value={formatMoney(stats.todayRevenue)}
           sub={`${stats.todayCount} órdenes`}
           color="#6C63FF"
         />
         <StatCard
           icon="💰"
           label="Propinas Hoy"
-          value={`$${stats.todayTips.toFixed(2)}`}
+          value={formatMoney(stats.todayTips)}
           sub="10% del total"
           color="#00C9A7"
         />
         <StatCard
           icon="📈"
           label="Ventas Semana"
-          value={`$${stats.weekRevenue.toFixed(2)}`}
+          value={formatMoney(stats.weekRevenue)}
           sub={`${stats.weekCount} órdenes`}
           color="#FF6584"
         />
@@ -207,7 +219,7 @@ export default function Dashboard() {
               <XAxis dataKey="name" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
               <Tooltip
-                formatter={(value) => [`$${value.toFixed(2)}`, 'Ventas']}
+                formatter={(value) => [formatMoney(value), 'Ventas']}
                 contentStyle={{ borderRadius: 8 }}
               />
               <Bar dataKey="ventas" fill="#6C63FF" radius={[6, 6, 0, 0]} />
@@ -223,7 +235,7 @@ export default function Dashboard() {
               <XAxis dataKey="name" tick={{ fontSize: 10 }} />
               <YAxis tick={{ fontSize: 12 }} />
               <Tooltip
-                formatter={(value) => [`$${value.toFixed(2)}`, 'Ventas']}
+                formatter={(value) => [formatMoney(value), 'Ventas']}
                 contentStyle={{ borderRadius: 8 }}
               />
               <Line
@@ -260,7 +272,7 @@ export default function Dashboard() {
                   <div className="top-product-info">
                     <span className="top-product-name">{p.name}</span>
                     <span className="top-product-meta">
-                      {p.count} unidades · ${p.revenue.toFixed(2)}
+                      {p.count} unidades · {formatMoney(p.revenue)}
                     </span>
                   </div>
                   <div className="top-product-bar">
@@ -285,19 +297,15 @@ export default function Dashboard() {
         {stats.categoryData.length > 0 && (
           <div className="chart-card">
             <h3>Ventas por Categoría</h3>
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={240}>
               <PieChart>
                 <Pie
                   data={stats.categoryData}
                   cx="50%"
                   cy="50%"
                   innerRadius={60}
-                  outerRadius={100}
+                  outerRadius={90}
                   dataKey="value"
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
-                  labelLine={false}
                 >
                   {stats.categoryData.map((_, index) => (
                     <Cell
@@ -307,11 +315,34 @@ export default function Dashboard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value) => [`$${value.toFixed(2)}`, '']}
+                  formatter={(value, name) => [formatMoney(value), name]}
                   contentStyle={{ borderRadius: 8 }}
                 />
               </PieChart>
             </ResponsiveContainer>
+            <div className="pie-legend">
+              {stats.categoryData.map((cat, index) => (
+                <div key={cat.name} className="pie-legend-item">
+                  <span
+                    className="pie-legend-dot"
+                    style={{
+                      backgroundColor: PIE_COLORS[index % PIE_COLORS.length],
+                    }}
+                  />
+                  <span className="pie-legend-name">{cat.name}</span>
+                  <span className="pie-legend-value">{formatMoney(cat.value)}</span>
+                  <span className="pie-legend-pct">
+                    {(
+                      (cat.value /
+                        (stats.categoryData.reduce((s, c) => s + c.value, 0) ||
+                          1)) *
+                      100
+                    ).toFixed(0)}
+                    %
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

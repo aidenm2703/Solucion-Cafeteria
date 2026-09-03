@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { storage } from '../utils/storage';
 import Modal from './Modal';
-
+import { formatMoney } from '../utils/currency';
 const METHOD_ICONS = {
   efectivo: '💵 Efectivo',
   tarjeta: '💳 Tarjeta',
@@ -132,7 +132,7 @@ export default function TurnManager() {
             <div className="corte-dia-stats">
               <div className="corte-stat">
                 <span className="corte-stat-value">
-                  ${corte.total.toFixed(2)}
+                  {formatMoney(corte.total)}
                 </span>
                 <span className="corte-stat-label">Total del Turno</span>
               </div>
@@ -142,7 +142,7 @@ export default function TurnManager() {
               </div>
               <div className="corte-stat">
                 <span className="corte-stat-value">
-                  ${corte.totalTips.toFixed(2)}
+                  {formatMoney(corte.totalTips)}
                 </span>
                 <span className="corte-stat-label">Propinas</span>
               </div>
@@ -158,14 +158,14 @@ export default function TurnManager() {
                   <span className="corte-method-count">
                     {corte.byMethodCount[method]} venta(s)
                   </span>
-                  <span className="corte-method-amount">${amount.toFixed(2)}</span>
+                  <span className="corte-method-amount">{formatMoney(amount)}</span>
                 </div>
               ))}
             </div>
 
             <div className="corte-dia-total">
               <span>Total recaudado</span>
-              <strong>${corte.total.toFixed(2)}</strong>
+              <strong>{formatMoney(corte.total)}</strong>
             </div>
 
             <div className="modal-form-actions">

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { storage } from '../utils/storage';
 import { BUSINESS_TYPES, SUGGESTED_PRODUCTS } from '../data/businessData';
+import { formatMoney } from '../utils/currency';
 
 export default function Setup() {
   const navigate = useNavigate();
@@ -221,7 +222,7 @@ export default function Setup() {
                       {product.name}
                     </span>
                     <span className="preview-product-price">
-                      ${product.price.toFixed(2)}
+                      {formatMoney(product.price)}
                     </span>
                   </div>
                 )

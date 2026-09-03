@@ -1,8 +1,13 @@
 import { useState, useMemo } from 'react';
 import { storage } from '../utils/storage';
+import { formatMoney } from '../utils/currency';
 
 function getTodayString() {
-  return new Date().toISOString().split('T')[0];
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 const METHOD_LABELS = {
@@ -55,14 +60,14 @@ export default function Orders() {
         <div className="stat-card" style={{ borderLeftColor: '#00C9A7' }}>
           <div className="stat-card-icon">💵</div>
           <div className="stat-card-info">
-            <span className="stat-card-value">${dayTotal.toFixed(2)}</span>
+            <span className="stat-card-value">{formatMoney(dayTotal)}</span>
             <span className="stat-card-label">Total del Día</span>
           </div>
         </div>
         <div className="stat-card" style={{ borderLeftColor: '#FFB800' }}>
           <div className="stat-card-icon">💰</div>
           <div className="stat-card-info">
-            <span className="stat-card-value">${dayTips.toFixed(2)}</span>
+            <span className="stat-card-value">{formatMoney(dayTips)}</span>
             <span className="stat-card-label">Propinas (10%)</span>
             <span className="stat-card-sub">Para el personal</span>
           </div>
@@ -99,7 +104,7 @@ export default function Orders() {
                     <span>
                       {item.quantity}x {item.name}
                     </span>
-                    <span>${(item.price * item.quantity).toFixed(2)}</span>
+                    <span>{formatMoney(item.price * item.quantity)}</span>
                   </div>
                 ))}
               </div>
@@ -109,10 +114,10 @@ export default function Orders() {
                 </span>
                 <div className="order-totals">
                   <span>
-                    Sub: ${order.subtotal?.toFixed(2)} · Propina: $
-                    {order.tip?.toFixed(2)}
+                    Sub: {formatMoney(order.subtotal)} · Propina:{' '}
+                    {formatMoney(order.tip)}
                   </span>
-                  <strong>Total: ${order.total?.toFixed(2)}</strong>
+                  <strong>Total: {formatMoney(order.total)}</strong>
                 </div>
               </div>
             </div>

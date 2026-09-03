@@ -9,8 +9,13 @@ const MONTH_NAMES = [
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
 ];
 
+function parseLocalDate(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
 function getWeekDates(baseDate) {
-  const d = new Date(baseDate);
+  const d = parseLocalDate(baseDate);
   const dayOfWeek = d.getDay();
   const monday = new Date(d);
   monday.setDate(d.getDate() - ((dayOfWeek + 6) % 7));
@@ -24,10 +29,101 @@ function getWeekDates(baseDate) {
 }
 
 function formatDate(d) {
-  return d.toISOString().split('T')[0];
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 const EMPTY_RES = { name: '', phone: '', guests: '1', date: '', hour: '12:00', notes: '' };
+
+function CallSimulation({ res, onClose }) {
+  const [phase, setPhase] = useState('ringing');
+  const [messageIndex, setMessageIndex] = useState(0);
+
+  const lines = [
+    { who: 'client', text: '¿Aló? ¡Hola!' },
+    { who: 'staff', text: `Hola ${res.name}, hablamos por su reservación de ${res.guests} personas para el ${res.date} a las ${res.hour}.` },
+    { who: 'client', text: '¡Sí! Gracias por confirmar, la esperamos.' },
+    { who: 'staff', text: 'Perfecto, queda confirmada. ¡Nos vemos pronto!' },
+  ];
+
+  const answerCall = () => {
+    setPhase('connected');
+    setMessageIndex(0);
+  };
+
+  const hangUp = () => {
+    setPhase('ended');
+    setTimeout(onClose, 1200);
+  };
+
+  return (
+    <div className="call-overlay">
+      <div className={`call-card phase-${phase}`}>
+        <div className="call-avatar">
+          {phase === 'ringing' ? '📞' : '🗣️'}
+        </div>
+        <div className="call-name">{res.name}</div>
+        <div className="call-phone">{res.phone || 'Sin teléfono'}</div>
+
+        {phase === 'ringing' && (
+          <>
+            <div className="call-status">Llamando...</div>
+            <div className="call-actions">
+              <button className="call-btn answer" onClick={answerCall}>
+                ✅ Contestar
+              </button>
+              <button className="call-btn hangup" onClick={hangUp}>
+                ❌ Colgar
+              </button>
+            </div>
+          </>
+        )}
+
+        {phase === 'connected' && (
+          <>
+            <div className="call-status">En llamada...</div>
+            <div className="call-chat">
+              {lines.slice(0, messageIndex + 1).map((m, i) => (
+                <div key={i} className={`call-msg ${m.who}`}>
+                  {m.text}
+                </div>
+              ))}
+            </div>
+            {messageIndex < lines.length - 1 ? (
+              <button
+                className="call-btn next"
+                onClick={() => setMessageIndex((i) => i + 1)}
+              >
+                ▶ Siguiente
+              </button>
+            ) : (
+              <button
+                className="call-btn next"
+                onClick={() =>
+                  setMessageIndex((i) => (i + 1) % (lines.length + 1))
+                }
+                style={{ opacity: 0.7 }}
+              >
+                🔁 Repetir conversación
+              </button>
+            )}
+            <div className="call-actions">
+              <button className="call-btn hangup" onClick={hangUp}>
+                📵 Colgar
+              </button>
+            </div>
+          </>
+        )}
+
+        {phase === 'ended' && (
+          <div className="call-status">Llamada finalizada</div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function Reservations() {
   const [reservations, setReservations] = useState(storage.getReservations());
@@ -42,6 +138,7 @@ export default function Reservations() {
   const [editingId, setEditingId] = useState(null);
   const [viewMode, setViewMode] = useState('calendar');
   const [showShareLink, setShowShareLink] = useState(false);
+  const [call, setCall] = useState(null);
 
   const weekDates = useMemo(() => getWeekDates(currentWeekStart), [currentWeekStart]);
 
@@ -57,13 +154,13 @@ export default function Reservations() {
   }, [reservations]);
 
   const goToPreviousWeek = () => {
-    const d = new Date(currentWeekStart);
+    const d = parseLocalDate(currentWeekStart);
     d.setDate(d.getDate() - 7);
     setCurrentWeekStart(formatDate(d));
   };
 
   const goToNextWeek = () => {
-    const d = new Date(currentWeekStart);
+    const d = parseLocalDate(currentWeekStart);
     d.setDate(d.getDate() + 7);
     setCurrentWeekStart(formatDate(d));
   };
@@ -256,6 +353,17 @@ export default function Reservations() {
                           >
                             <span className="event-name">{r.name}</span>
                             <span className="event-guests">{r.guests} 👤</span>
+                            {r.status === 'confirmada' && (
+                              <button
+                                className="event-call-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCall(r);
+                                }}
+                              >
+                                📞 Llamar
+                              </button>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -442,6 +550,8 @@ export default function Reservations() {
           Los clientes podrán ver disponibilidad y hacer reservaciones desde su navegador.
         </p>
       </Modal>
+
+      {call && <CallSimulation res={call} onClose={() => setCall(null)} />}
     </div>
   );
 }

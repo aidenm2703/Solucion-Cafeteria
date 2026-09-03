@@ -2038,6 +2038,187 @@ body {
   color: var(--primary);
 }
 
+/* ============ PIE LEGEND ============ */
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.pie-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--border-light);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.pie-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pie-legend-name {
+  font-weight: 600;
+  flex: 1;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.pie-legend-value {
+  color: var(--text-secondary);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.pie-legend-pct {
+  font-weight: 700;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+/* ============ CALL BUTTON + SIMULATION ============ */
+.event-call-btn {
+  margin-left: 6px;
+  padding: 2px 6px;
+  border: none;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--success);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition);
+}
+
+.event-call-btn:hover {
+  background: #fff;
+  transform: scale(1.05);
+}
+
+.call-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 30, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 400;
+  animation: fadeIn 0.25s ease;
+}
+
+.call-card {
+  width: 320px;
+  max-width: 90vw;
+  background: var(--card);
+  border-radius: 24px;
+  padding: 28px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.call-avatar {
+  font-size: 52px;
+  animation: bounce 1s infinite;
+}
+
+.call-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.call-phone {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.call-status {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.call-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.call-btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--transition);
+  color: #fff;
+}
+
+.call-btn.answer { background: var(--success); }
+.call-btn.answer:hover { background: #00b394; }
+.call-btn.hangup { background: var(--danger); }
+.call-btn.hangup:hover { background: #e63b4b; }
+.call-btn.next {
+  background: var(--primary);
+  margin-top: 12px;
+  width: 100%;
+}
+.call-btn.next:hover { background: var(--primary-dark); }
+
+.call-chat {
+  width: 100%;
+  max-height: 160px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px;
+  background: var(--bg);
+  border-radius: 12px;
+}
+
+.call-msg {
+  max-width: 80%;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.call-msg.client {
+  align-self: flex-start;
+  background: var(--card);
+  border: 1px solid var(--border-light);
+}
+
+.call-msg.staff {
+  align-self: flex-end;
+  background: var(--primary);
+  color: #fff;
+}
+
+.phase-ended .call-avatar { animation: none; }
+
 /* ============ RESPONSIVE ============ */
 @media (max-width: 1024px) {
   .sidebar {

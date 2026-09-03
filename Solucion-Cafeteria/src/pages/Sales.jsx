@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { storage } from '../utils/storage';
 import Modal from '../components/Modal';
+import { formatMoney } from '../utils/currency';
 
 export default function Sales() {
   const [menu] = useState(storage.getMenu());
@@ -127,7 +128,7 @@ export default function Sales() {
                   {qty > 0 && <span className="pos-product-qty">{qty}</span>}
                   <span className="pos-product-name">{item.name}</span>
                   <span className="pos-product-price">
-                    ${item.price.toFixed(2)}
+                    {formatMoney(item.price)}
                   </span>
                 </div>
               );
@@ -158,7 +159,7 @@ export default function Sales() {
                     <div className="pos-cart-item-info">
                       <span className="pos-cart-item-name">{item.name}</span>
                       <span className="pos-cart-item-price">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {formatMoney(item.price * item.quantity)}
                       </span>
                     </div>
                     <div className="pos-cart-item-controls">
@@ -189,15 +190,15 @@ export default function Sales() {
               <div className="pos-cart-summary">
                 <div className="pos-cart-row">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>{formatMoney(subtotal)}</span>
                 </div>
                 <div className="pos-cart-row tip">
                   <span>Propina (10%)</span>
-                  <span>${tip.toFixed(2)}</span>
+                  <span>{formatMoney(tip)}</span>
                 </div>
                 <div className="pos-cart-row total">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>{formatMoney(total)}</span>
                 </div>
               </div>
 
@@ -237,7 +238,7 @@ export default function Sales() {
         <div className="pos-cart-summary" style={{ marginTop: 16 }}>
           <div className="pos-cart-row total">
             <span>Total a pagar</span>
-            <span>${total.toFixed(2)}</span>
+            <span>{formatMoney(total)}</span>
           </div>
         </div>
         <div className="modal-form-actions" style={{ marginTop: 16 }}>
@@ -255,7 +256,7 @@ export default function Sales() {
 
       {showSuccess && (
         <div className="toast success">
-          <span>✅</span> Venta registrada exitosamente — ${lastOrder?.total?.toFixed(2)}
+          <span>✅</span> Venta registrada exitosamente — {formatMoney(lastOrder?.total)}
         </div>
       )}
     </div>
