@@ -41,6 +41,15 @@ export const storage = {
     localStorage.removeItem(PREFIX + key);
   },
 
+  resetToFactory() {
+    for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+      const key = localStorage.key(index);
+      if (key && (key.startsWith(PREFIX) || key.startsWith(LEGACY_PREFIX))) {
+        localStorage.removeItem(key);
+      }
+    }
+  },
+
   getBusiness() {
     return this.get('business', null);
   },

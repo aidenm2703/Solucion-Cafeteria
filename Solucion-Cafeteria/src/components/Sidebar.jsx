@@ -44,8 +44,8 @@ export default function Sidebar() {
       danger: true,
     });
     if (!ok) return;
-    localStorage.clear();
-    navigate('/login');
+    storage.resetToFactory();
+    navigate('/');
     window.location.reload();
   };
 

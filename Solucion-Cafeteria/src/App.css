@@ -758,6 +758,18 @@ body {
 .setup-btn.primary:hover { background: var(--primary-dark); box-shadow: 0 4px 15px rgba(var(--color-primary-rgb), 0.4); }
 .setup-btn.primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
+.setup-btn.secondary {
+  width: 100%;
+  margin-top: 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.78);
+}
+.setup-btn.secondary:hover {
+  border-color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .setup-btn.large {
   padding: 16px 40px;
   font-size: 18px;

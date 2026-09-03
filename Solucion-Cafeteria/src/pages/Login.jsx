@@ -46,7 +46,7 @@ function pickAffirmation() {
 
 export default function Login() {
   const navigate = useNavigate();
-  const { showToast } = useToast();
+  const { showToast, confirm } = useToast();
   const business = storage.getBusiness();
   const users = storage.getUsers();
   const legacyAuth = storage.getAuth();
@@ -105,6 +105,20 @@ export default function Login() {
         message: 'El usuario o la contraseña no son válidos.',
       });
     }
+  };
+
+  const handleFactoryReset = async () => {
+    const ok = await confirm({
+      title: 'Restaurar configuración de fábrica',
+      message: 'Se borrarán el negocio, todos los usuarios, contraseñas y datos guardados.',
+      confirmText: 'Sí, restaurar',
+      cancelText: 'Cancelar',
+      danger: true,
+    });
+    if (!ok) return;
+    storage.resetToFactory();
+    navigate('/');
+    window.location.reload();
   };
 
   function playErrorSound() {
@@ -173,6 +187,13 @@ export default function Login() {
                 disabled={!username.trim() || !password}
               >
                 🔓 Entrar
+              </button>
+              <button
+                type="button"
+                className="setup-btn secondary"
+                onClick={handleFactoryReset}
+              >
+                Restaurar configuración de fábrica
               </button>
             </form>
           </div>
