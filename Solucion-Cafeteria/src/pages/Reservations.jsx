@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { storage } from '../utils/storage';
 import Modal from '../components/Modal';
+import { useToast } from '../Components/useToast';
 
 const HOURS = Array.from({ length: 16 }, (_, i) => `${(i + 6).toString().padStart(2, '0')}:00`);
 const DAYS_OF_WEEK = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
@@ -126,6 +127,7 @@ function CallSimulation({ res, onClose }) {
 }
 
 export default function Reservations() {
+  const { showToast, confirm } = useToast();
   const [reservations, setReservations] = useState(storage.getReservations());
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const d = new Date();
@@ -222,13 +224,24 @@ export default function Reservations() {
     setShowModal(false);
   };
 
-  const handleCancel = (id) => {
-    if (confirm('¿Cancelar esta reservación?')) {
-      storage.cancelReservation(id);
-      setReservations((prev) =>
-        prev.map((r) => (r.id === id ? { ...r, status: 'cancelada' } : r))
-      );
-    }
+  const handleCancel = async (id) => {
+    const ok = await confirm({
+      title: 'Cancelar reservación',
+      message: '¿Estás seguro de que deseas cancelar esta reservación?',
+      confirmText: 'Sí, cancelar',
+      cancelText: 'No, mantener',
+      danger: true,
+    });
+    if (!ok) return;
+    storage.cancelReservation(id);
+    setReservations((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, status: 'cancelada' } : r))
+    );
+    showToast({
+      type: 'info',
+      title: 'Reservación cancelada',
+      message: 'La reservación fue marcada como cancelada.',
+    });
   };
 
   const handleReschedule = (res) => {
@@ -539,8 +552,22 @@ export default function Reservations() {
           <button
             className="btn btn-primary"
             onClick={() => {
-              navigator.clipboard.writeText(SHARE_URL);
-              alert('Link copiado al portapapeles');
+              navigator.clipboard
+                .writeText(SHARE_URL)
+                .then(() => {
+                  showToast({
+                    type: 'success',
+                    title: 'Enlace copiado',
+                    message: 'El link de reservación se copió al portapapeles.',
+                  });
+                })
+                .catch(() => {
+                  showToast({
+                    type: 'error',
+                    title: 'No se pudo copiar',
+                    message: 'Intenta copiar el enlace manualmente.',
+                  });
+                });
             }}
           >
             📋 Copiar

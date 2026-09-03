@@ -1,3 +1,5 @@
+import { ALL_PRIVILEGE_IDS } from '../data/roles';
+
 const PREFIX = 'gaiaDynamics_';
 const LEGACY_PREFIX = 'businessOS_';
 
@@ -189,5 +191,129 @@ export const storage = {
 
   getTurnHistory() {
     return this.get('turnHistory', []);
+  },
+
+  /* ════════════════════════════════════════
+     Usuarios y Privilegios
+     ════════════════════════════════════════ */
+
+  getUsers() {
+    const users = this.get('users', null);
+    // Migración: si aún no hay lista de usuarios, se crea una a partir
+    // de las credenciales guardadas con el flujo antiguo (Setup/Login).
+    if (users === null) {
+      const legacyAuth = this.get('auth', null);
+      const defaults = legacyAuth
+        ? [
+            {
+              id: 'admin',
+              name: 'Administrador',
+              username: legacyAuth.username,
+              password: legacyAuth.password,
+              role: 'admin',
+              privileges: [...ALL_PRIVILEGE_IDS],
+              createdAt: legacyAuth.createdAt || new Date().toISOString(),
+            },
+          ]
+        : [];
+      this.set('users', defaults);
+      return defaults;
+    }
+    return Array.isArray(users) ? users : [];
+  },
+
+  setUsers(users) {
+    return this.set('users', users);
+  },
+
+  addUser(user) {
+    const users = this.getUsers();
+    const newUser = {
+      ...user,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+    };
+    users.push(newUser);
+    this.setUsers(users);
+    return newUser;
+  },
+
+  updateUser(id, updates) {
+    const users = this.getUsers();
+    const index = users.findIndex((u) => u.id === id);
+    if (index !== -1) {
+      users[index] = { ...users[index], ...updates };
+      this.setUsers(users);
+      return users[index];
+    }
+    return null;
+  },
+
+  deleteUser(id) {
+    const users = this.getUsers().filter((u) => u.id !== id);
+    this.setUsers(users);
+    return users;
+  },
+
+  findUser(username) {
+    return this.getUsers().find((u) => u.username === username) || null;
+  },
+
+  setCurrentUser(username) {
+    return this.set('currentUser', username);
+  },
+
+  getCurrentUsername() {
+    return this.get('currentUser', null);
+  },
+
+  getCurrentUser() {
+    let username = this.getCurrentUsername();
+    // Migración: si hay una sesión activa (datos previos al sistema de
+    // empleados), se asume la cuenta principal del administrador.
+    if (!username && this.isLoggedIn()) {
+      const users = this.getUsers();
+      const fallback =
+        users.find((u) => u.role === 'admin') || users[0] || null;
+      if (fallback) {
+        username = fallback.username;
+        this.setCurrentUser(username);
+      }
+    }
+    if (!username) return null;
+    return this.findUser(username);
+  },
+
+  getUserPrivileges() {
+    const user = this.getCurrentUser();
+    if (!user) return [];
+    return Array.isArray(user.privileges) ? user.privileges : [];
+  },
+
+  hasPrivilege(permission) {
+    if (!this.isLoggedIn()) return false;
+    const user = this.getCurrentUser();
+    if (!user) return false;
+    if (user.role === 'admin') return true;
+    return Array.isArray(user.privileges) && user.privileges.includes(permission);
+  },
+
+  /** Primera página permitida para el usuario actual */
+  getHomePath() {
+    const user = this.getCurrentUser();
+    if (!user || user.role === 'admin') return '/';
+    const privs = this.getUserPrivileges();
+    const map = {
+      dashboard: '/',
+      sales: '/sales',
+      orders: '/orders',
+      menu: '/menu',
+      reservations: '/reservations',
+      whatsapp: '/whatsapp',
+    };
+    for (const key of Object.keys(map)) {
+      if (privs.includes(key)) return map[key];
+    }
+    return '/';
   },
 };

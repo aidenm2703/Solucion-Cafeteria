@@ -1,37 +1,61 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { storage } from '../utils/storage';
+import { useToast } from './useToast';
+import { getRoleById } from '../data/roles';
 import logoGaia from '../Img/logoGaia.jpeg';
 import BusinessIcon from './BusinessIcon';
 import TurnManager from './TurnManager';
 
 const NAV_ITEMS = [
-  { to: '/', icon: '🏠', label: 'Inicio' },
-  { to: '/dashboard', icon: '📊', label: 'Dashboard' },
-  { to: '/menu', icon: '📋', label: 'Menú' },
-  { to: '/sales', icon: '💰', label: 'Punto de Venta' },
-  { to: '/orders', icon: '🧾', label: 'Órdenes del Día' },
-  { to: '/reservations', icon: '📅', label: 'Reservaciones' },
-  { to: '/whatsapp', icon: '💬', label: 'WhatsApp' },
+  { to: '/', icon: '🏠', label: 'Inicio', privilege: 'dashboard' },
+  { to: '/dashboard', icon: '📊', label: 'Dashboard', privilege: 'dashboard' },
+  { to: '/sales', icon: '💰', label: 'Punto de Venta', privilege: 'sales' },
+  { to: '/orders', icon: '🧾', label: 'Órdenes del Día', privilege: 'orders' },
+  { to: '/menu', icon: '📋', label: 'Menú', privilege: 'menu' },
+  { to: '/reservations', icon: '📅', label: 'Reservaciones', privilege: 'reservations' },
+  { to: '/whatsapp', icon: '💬', label: 'WhatsApp', privilege: 'whatsapp' },
 ];
 
 export default function Sidebar() {
   const navigate = useNavigate();
+  const { confirm } = useToast();
   const business = storage.getBusiness();
-  const auth = storage.getAuth();
+  const currentUser = storage.getCurrentUser();
+  const canManageUsers = storage.hasPrivilege('manageUsers');
+  const canManageTurn = storage.hasPrivilege('manageTurn');
 
-  const handleReset = () => {
-    if (confirm('¿Estás seguro? Esto borrará todos los datos del negocio.')) {
-      localStorage.clear();
-      navigate('/');
-      window.location.reload();
-    }
+  const allowedNav = NAV_ITEMS.filter(
+    (item) => storage.hasPrivilege(item.privilege)
+  );
+
+  const visibleNav = canManageUsers
+    ? [
+        ...allowedNav,
+        { to: '/users', icon: '👥', label: 'Empleados', privilege: 'manageUsers' },
+      ]
+    : allowedNav;
+
+  const handleReset = async () => {
+    const ok = await confirm({
+      title: 'Reiniciar sistema',
+      message: '¿Estás seguro? Esto borrará TODOS los datos del negocio.',
+      confirmText: 'Sí, borrar todo',
+      cancelText: 'Cancelar',
+      danger: true,
+    });
+    if (!ok) return;
+    localStorage.clear();
+    navigate('/login');
+    window.location.reload();
   };
 
   const handleLogout = () => {
     storage.setLoggedIn(false);
-    navigate('/');
-    window.location.reload();
+    storage.setCurrentUser(null);
+    navigate('/login');
   };
+
+  const role = currentUser ? getRoleById(currentUser.role) : null;
 
   return (
     <aside className="sidebar">
@@ -51,9 +75,9 @@ export default function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        {NAV_ITEMS.map((item) => (
+        {visibleNav.map((item) => (
           <NavLink
-            key={item.to}
+            key={`${item.to}-${item.label}`}
             to={item.to}
             end={item.to === '/'}
             className={({ isActive }) =>
@@ -66,19 +90,32 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="sidebar-turn">
-        <TurnManager />
-      </div>
+      {canManageTurn && (
+        <div className="sidebar-turn">
+          <TurnManager />
+        </div>
+      )}
 
       <div className="sidebar-footer">
-        {auth && (
-          <button onClick={handleLogout} className="sidebar-logout">
-            🚪 Cerrar Sesión
+        {currentUser && (
+          <div className="sidebar-user">
+            <span className="sidebar-user-avatar">
+              {role ? role.icon : '👤'}
+            </span>
+            <div className="sidebar-user-info">
+              <strong>{currentUser.name || currentUser.username}</strong>
+              <span>{role ? role.label : 'Usuario'}</span>
+            </div>
+          </div>
+        )}
+        <button onClick={handleLogout} className="sidebar-logout">
+          🚪 Cerrar Sesión
+        </button>
+        {canManageUsers && (
+          <button onClick={handleReset} className="sidebar-reset">
+            🗑️ Reiniciar Sistema
           </button>
         )}
-        <button onClick={handleReset} className="sidebar-reset">
-          🗑️ Reiniciar Sistema
-        </button>
         <div className="sidebar-version">v1.0.0</div>
       </div>
     </aside>

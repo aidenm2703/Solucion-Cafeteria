@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { storage } from '../utils/storage';
 import { BUSINESS_TYPES, SUGGESTED_PRODUCTS } from '../data/businessData';
+import { ALL_PRIVILEGE_IDS } from '../data/roles';
 import logoGaia from '../Img/logoGaia.jpeg';
 import BusinessIcon from '../Components/BusinessIcon';
 import { formatMoney } from '../utils/currency';
@@ -75,6 +76,19 @@ export default function Setup() {
       password,
       createdAt: new Date().toISOString(),
     });
+
+    // Cuenta principal del Administrador (con todos los privilegios)
+    const adminUser = {
+      id: 'admin',
+      name: name.trim(),
+      username: username.trim(),
+      password,
+      role: 'admin',
+      privileges: [...ALL_PRIVILEGE_IDS],
+      createdAt: new Date().toISOString(),
+    };
+    storage.setUsers([adminUser]);
+    storage.setCurrentUser(adminUser.username);
     storage.setLoggedIn(true);
 
     const suggestedProducts = SUGGESTED_PRODUCTS[selectedType.id] || [];

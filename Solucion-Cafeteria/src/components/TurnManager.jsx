@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { storage } from '../utils/storage';
 import Modal from './Modal';
+import { useToast } from './useToast';
 import { formatMoney } from '../utils/currency';
 const METHOD_ICONS = {
   efectivo: '💵 Efectivo',
@@ -10,24 +11,48 @@ const METHOD_ICONS = {
 };
 
 export default function TurnManager() {
+  const { confirm, showToast } = useToast();
   const [turn, setTurn] = useState(storage.getTurn());
   const [showCorte, setShowCorte] = useState(false);
   const [corte, setCorte] = useState(null);
 
-  const handleOpenTurn = () => {
-    if (confirm('¿Abrir el turno del día?')) {
-      const newTurn = storage.openTurn();
-      setTurn(newTurn);
-    }
+  const handleOpenTurn = async () => {
+    const ok = await confirm({
+      title: 'Abrir el turno del día',
+      message: '¿Confirmas que deseas abrir el turno para comenzar a vender?',
+      confirmText: 'Sí, abrir turno',
+      cancelText: 'Cancelar',
+    });
+    if (!ok) return;
+    const newTurn = storage.openTurn();
+    setTurn(newTurn);
+    showToast({
+      type: 'success',
+      title: 'Turno abierto',
+      message: 'El turno del día está abierto. ¡Buenas ventas!',
+    });
   };
 
-  const handleCloseTurn = () => {
-    if (!confirm('¿Cerrar el turno y realizar el corte del día?')) return;
+  const handleCloseTurn = async () => {
+    const ok = await confirm({
+      title: 'Cerrar turno',
+      message:
+        '¿Estás seguro de que deseas cerrar el turno? Se realizará el corte del día y ya no podrás vender hasta abrir uno nuevo.',
+      confirmText: 'Sí, cerrar turno',
+      cancelText: 'Cancelar',
+      danger: true,
+    });
+    if (!ok) return;
     const closed = storage.closeTurn();
     const report = buildCorte(closed);
     setCorte(report);
     setShowCorte(true);
     setTurn(null);
+    showToast({
+      type: 'info',
+      title: 'Turno cerrado',
+      message: 'El turno se cerró y el corte del día quedó listo.',
+    });
   };
 
   function buildCorte(turnObj) {

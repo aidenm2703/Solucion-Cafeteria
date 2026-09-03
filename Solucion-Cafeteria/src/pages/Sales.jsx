@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { storage } from '../utils/storage';
 import Modal from '../Components/Modal';
+import { useToast } from '../Components/useToast';
 import {
   DEFAULT_EXCHANGE_RATE,
   formatBs,
@@ -11,17 +12,20 @@ import {
 } from '../utils/currency';
 
 export default function Sales() {
+  const { showToast } = useToast();
   const [menu] = useState(storage.getMenu());
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState('');
   const [filterCat, setFilterCat] = useState('');
   const [showPayment, setShowPayment] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('efectivo');
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [lastOrder, setLastOrder] = useState(null);
   const [exchangeRate, setExchangeRate] = useState(() =>
     storage.getExchangeRate().toString()
   );
+
+  const turn = storage.getTurn();
+  const turnOpen = !!turn;
+  const canEditSettings = storage.hasPrivilege('manageSettings');
 
   const categories = [...new Set(menu.map((i) => i.category))];
 
@@ -78,7 +82,27 @@ export default function Sales() {
     return item ? item.quantity : 0;
   };
 
+  const tryOpenPayment = () => {
+    if (!storage.getTurn()) {
+      showToast({
+        type: 'warning',
+        title: 'Turno cerrado',
+        message: 'Para poder vender debes abrir el turno del día primero.',
+      });
+      return;
+    }
+    setShowPayment(true);
+  };
+
   const handlePayment = () => {
+    if (!storage.getTurn()) {
+      showToast({
+        type: 'error',
+        title: 'No se puede vender',
+        message: 'El turno está cerrado. Abre el turno para poder registrar la venta.',
+      });
+      return;
+    }
     const order = {
       items: cart.map((c) => ({
         id: c.id,
@@ -95,11 +119,15 @@ export default function Sales() {
       status: 'completada',
     };
     const saved = storage.addOrder(order);
-    setLastOrder(saved);
     setCart([]);
     setShowPayment(false);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
+    showToast({
+      type: 'success',
+      title: 'Venta registrada',
+      message: saved
+        ? `${formatDual(saved.total, saved.exchangeRate)} · ${paymentMethod}`
+        : 'La venta se registró exitosamente.',
+    });
   };
 
   return (
@@ -119,10 +147,25 @@ export default function Sales() {
               className="form-input rate-input"
               value={exchangeRate}
               onChange={handleRateChange}
+              disabled={!canEditSettings}
+              title={canEditSettings ? '' : 'Solo el administrador puede cambiar el tipo de cambio'}
             />
           </label>
         </div>
       </div>
+
+      {!turnOpen && (
+        <div className="pos-turn-banner">
+          <span className="pos-turn-banner-icon">🔒</span>
+          <div className="pos-turn-banner-text">
+            <strong>Turno cerrado</strong>
+            <p>
+              Para poder vender debes abrir el turno del día desde el panel lateral
+              (<em>Abrir Turno</em>).
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="pos-layout">
         <div className="pos-products">
@@ -250,8 +293,8 @@ export default function Sales() {
               </div>
 
               <button
-                className="btn btn-primary btn-block"
-                onClick={() => setShowPayment(true)}
+                className={`btn btn-primary btn-block ${!turnOpen ? 'btn-block-disabled' : ''}`}
+                onClick={tryOpenPayment}
               >
                 💳 Proceder al Pago
               </button>
@@ -317,15 +360,6 @@ export default function Sales() {
           </button>
         </div>
       </Modal>
-
-      {showSuccess && (
-        <div className="toast success">
-          <span>✅</span> Venta registrada exitosamente —{' '}
-          {lastOrder
-            ? formatDual(lastOrder.total, lastOrder.exchangeRate)
-            : ''}
-        </div>
-      )}
     </div>
   );
 }

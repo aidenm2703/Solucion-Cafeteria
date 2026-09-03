@@ -12,6 +12,7 @@ const EMPTY_ITEM = {
 };
 
 export default function Menu() {
+  const canEdit = storage.hasPrivilege('editMenu');
   const [menu, setMenu] = useState(storage.getMenu());
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
@@ -107,14 +108,30 @@ export default function Menu() {
           </p>
         </div>
         <div className="page-actions">
-          <button className="btn btn-outline" onClick={handleLoadSuggested}>
-            ✨ Cargar Sugeridos
-          </button>
-          <button className="btn btn-primary" onClick={openCreate}>
-            ➕ Nuevo Producto
-          </button>
+          {canEdit ? (
+            <>
+              <button className="btn btn-outline" onClick={handleLoadSuggested}>
+                ✨ Cargar Sugeridos
+              </button>
+              <button className="btn btn-primary" onClick={openCreate}>
+                ➕ Nuevo Producto
+              </button>
+            </>
+          ) : (
+            <span className="readonly-badge">👀 Modo solo lectura</span>
+          )}
         </div>
       </div>
+
+      {!canEdit && (
+        <div className="pos-turn-banner info">
+          <span className="pos-turn-banner-icon">ℹ️</span>
+          <div className="pos-turn-banner-text">
+            <strong>Permiso de solo lectura</strong>
+            <p>Tu usuario puede ver el menú pero no editarlo.</p>
+          </div>
+        </div>
+      )}
 
       <div className="filter-bar">
         <button
@@ -146,20 +163,22 @@ export default function Menu() {
             </div>
             <h3 className="menu-card-name">{item.name}</h3>
             <p className="menu-card-desc">{item.description}</p>
-            <div className="menu-card-actions">
-              <button
-                className="btn btn-sm btn-outline"
-                onClick={() => openEdit(item)}
-              >
-                ✏️ Editar
-              </button>
-              <button
-                className="btn btn-sm btn-danger"
-                onClick={() => setDeleteConfirm(item.id)}
-              >
-                🗑️
-              </button>
-            </div>
+            {canEdit && (
+              <div className="menu-card-actions">
+                <button
+                  className="btn btn-sm btn-outline"
+                  onClick={() => openEdit(item)}
+                >
+                  ✏️ Editar
+                </button>
+                <button
+                  className="btn btn-sm btn-danger"
+                  onClick={() => setDeleteConfirm(item.id)}
+                >
+                  🗑️
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>

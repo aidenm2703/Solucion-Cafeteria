@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { storage } from '../utils/storage';
+import { useToast } from '../Components/useToast';
 
 function playWelcomeSound() {
   try {
@@ -43,8 +45,11 @@ function pickAffirmation() {
 }
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { showToast } = useToast();
   const business = storage.getBusiness();
-  const auth = storage.getAuth() || { username: 'admin', password: '' };
+  const users = storage.getUsers();
+  const legacyAuth = storage.getAuth();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -52,26 +57,53 @@ export default function Login() {
   const [welcome, setWelcome] = useState(null);
   const welcomedRef = useRef(false);
 
+  const findMatchingUser = () => {
+    const lower = username.trim().toLowerCase();
+    const user = users.find(
+      (u) => u.username.toLowerCase() === lower && u.password === password
+    );
+    if (user) return user;
+    // Compatibilidad con credenciales antiguas
+    if (
+      legacyAuth &&
+      legacyAuth.username.toLowerCase() === lower &&
+      legacyAuth.password === password
+    ) {
+      return users[0] || null;
+    }
+    return null;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
-    if (
-      username.trim() === auth.username &&
-      password === auth.password
-    ) {
+    const user = findMatchingUser();
+
+    if (user) {
       storage.setLoggedIn(true);
+      storage.setCurrentUser(user.username);
       setWelcome(pickAffirmation());
       if (!welcomedRef.current) {
         playWelcomeSound();
         welcomedRef.current = true;
       }
+      showToast({
+        type: 'success',
+        title: 'Bienvenido',
+        message: `Sesión iniciada como ${user.name || user.username}.`,
+      });
       setTimeout(() => {
-        storage.setLoggedIn(true);
+        navigate('/');
         window.location.reload();
-      }, 1800);
+      }, 1500);
     } else {
       playErrorSound();
       setError('Usuario o contraseña incorrectos. Intenta de nuevo.');
+      showToast({
+        type: 'error',
+        title: 'Acceso denegado',
+        message: 'El usuario o la contraseña no son válidos.',
+      });
     }
   };
 

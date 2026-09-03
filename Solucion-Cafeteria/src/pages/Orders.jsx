@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { storage } from '../utils/storage';
-import { formatBs, formatDual, formatRateText, formatUsd, usdToBs } from '../utils/currency';
+import { formatBs, formatDual, formatMoney, formatRateText, formatUsd, usdToBs } from '../utils/currency';
 
 function getTodayString() {
   const d = new Date();
