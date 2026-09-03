@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { storage } from '../utils/storage';
-import Modal from '../components/Modal';
+import Modal from '../Components/Modal';
 import {
   DEFAULT_EXCHANGE_RATE,
   formatBs,
   formatDual,
+  formatMoney,
   isValidRate,
   usdToBs,
 } from '../utils/currency';
@@ -163,7 +164,7 @@ export default function Sales() {
                   {qty > 0 && <span className="pos-product-qty">{qty}</span>}
                   <span className="pos-product-name">{item.name}</span>
                   <span className="pos-product-price">
-                    ${item.price.toFixed(2)}
+                    {formatMoney(item.price)}
                   </span>
                 </div>
               );
@@ -194,7 +195,7 @@ export default function Sales() {
                     <div className="pos-cart-item-info">
                       <span className="pos-cart-item-name">{item.name}</span>
                       <span className="pos-cart-item-price">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {formatMoney(item.price * item.quantity)}
                       </span>
                     </div>
                     <div className="pos-cart-item-controls">

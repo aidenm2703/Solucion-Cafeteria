@@ -3,7 +3,11 @@ import { storage } from '../utils/storage';
 import { formatBs, formatDual, formatRateText, formatUsd, usdToBs } from '../utils/currency';
 
 function getTodayString() {
-  return new Date().toISOString().split('T')[0];
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 const METHOD_LABELS = {
@@ -117,7 +121,7 @@ export default function Orders() {
                     <span>
                       {item.quantity}x {item.name}
                     </span>
-                    <span>${(item.price * item.quantity).toFixed(2)}</span>
+                    <span>{formatMoney(item.price * item.quantity)}</span>
                   </div>
                 ))}
               </div>

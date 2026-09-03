@@ -18,6 +18,7 @@ export default function Menu() {
   const [form, setForm] = useState({ ...EMPTY_ITEM });
   const [filter, setFilter] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [newCategory, setNewCategory] = useState('');
 
   const business = storage.getBusiness();
   const categories = [...new Set(menu.map((i) => i.category))];
@@ -30,6 +31,7 @@ export default function Menu() {
   const openCreate = () => {
     setEditingItem(null);
     setForm({ ...EMPTY_ITEM });
+    setNewCategory('');
     setShowModal(true);
   };
 
@@ -41,6 +43,7 @@ export default function Menu() {
       price: item.price.toString(),
       description: item.description,
     });
+    setNewCategory('');
     setShowModal(true);
   };
 
@@ -48,10 +51,13 @@ export default function Menu() {
     e.preventDefault();
     if (!form.name || !form.price) return;
 
+    const category =
+      form.category === '__new__' ? (newCategory.trim() || 'General') : form.category;
+
     if (editingItem) {
       const updated = storage.updateMenuItem(editingItem.id, {
         name: form.name,
-        category: form.category || 'General',
+        category,
         price: parseFloat(form.price),
         description: form.description,
       });
@@ -59,7 +65,7 @@ export default function Menu() {
     } else {
       const newItem = storage.addMenuItem({
         name: form.name,
-        category: form.category || 'General',
+        category,
         price: parseFloat(form.price),
         description: form.description,
       });
@@ -185,30 +191,39 @@ export default function Menu() {
           </div>
           <div className="form-group">
             <label>Categoría</label>
-            <input
-              type="text"
+            <select
               className="form-input"
               value={form.category}
               onChange={(e) => setForm({ ...form, category: e.target.value })}
-              placeholder="Ej: Bebidas Calientes"
-              list="categories-list"
-            />
-            <datalist id="categories-list">
+            >
+              <option value="">Seleccionar categoría...</option>
               {categories.map((cat) => (
-                <option key={cat} value={cat} />
+                <option key={cat} value={cat}>{cat}</option>
               ))}
-            </datalist>
+              <option value="__new__">➕ Nueva categoría...</option>
+            </select>
+            {form.category === '__new__' && (
+              <input
+                type="text"
+                className="form-input"
+                style={{ marginTop: 8 }}
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="Nombre de la nueva categoría"
+                autoFocus
+              />
+            )}
           </div>
           <div className="form-group">
             <label>Precio (USD $) *</label>
             <input
               type="number"
-              step="0.01"
+              step="50"
               min="0"
               className="form-input"
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
-              placeholder="0.00"
+              placeholder="0"
               required
             />
           </div>

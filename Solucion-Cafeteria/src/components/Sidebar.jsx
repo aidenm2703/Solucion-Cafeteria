@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { storage } from '../utils/storage';
 import logoGaia from '../Img/logoGaia.jpeg';
 import BusinessIcon from './BusinessIcon';
+import TurnManager from './TurnManager';
 
 const NAV_ITEMS = [
   { to: '/', icon: '🏠', label: 'Inicio' },
@@ -16,6 +17,7 @@ const NAV_ITEMS = [
 export default function Sidebar() {
   const navigate = useNavigate();
   const business = storage.getBusiness();
+  const auth = storage.getAuth();
 
   const handleReset = () => {
     if (confirm('¿Estás seguro? Esto borrará todos los datos del negocio.')) {
@@ -23,6 +25,12 @@ export default function Sidebar() {
       navigate('/');
       window.location.reload();
     }
+  };
+
+  const handleLogout = () => {
+    storage.setLoggedIn(false);
+    navigate('/');
+    window.location.reload();
   };
 
   return (
@@ -58,7 +66,16 @@ export default function Sidebar() {
         ))}
       </nav>
 
+      <div className="sidebar-turn">
+        <TurnManager />
+      </div>
+
       <div className="sidebar-footer">
+        {auth && (
+          <button onClick={handleLogout} className="sidebar-logout">
+            🚪 Cerrar Sesión
+          </button>
+        )}
         <button onClick={handleReset} className="sidebar-reset">
           🗑️ Reiniciar Sistema
         </button>
